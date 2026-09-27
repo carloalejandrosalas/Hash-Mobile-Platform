@@ -5,30 +5,30 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Pagination {
-    final private int currentPage;
-    final private int limit;
-    final private int totalRecords;
-    final private int totalPages;
-    final private int offset;
+    private final int currentPage;
+    private final int limit;
+    private final int totalRecords;
+    private final int totalPages;
+    private final long offset;
 
-    public Pagination (int currentPage, int limit, int totalRecords) {
+    public Pagination(int currentPage, int limit, int totalRecords) {
         final var defaultLimit = 10;
 
-        this.currentPage = currentPage;
-        this.limit = limit;
-        this.totalRecords = totalRecords;
-
-        if (limit <= 0) {
-            limit = defaultLimit;
+        if (currentPage < 1) {
+            throw new IllegalArgumentException("Current page must be greater than zero");
         }
 
+        this.currentPage = currentPage;
+        this.limit = limit > 0 ? limit : defaultLimit;
+        this.totalRecords = totalRecords;
+
         if (totalRecords > 0) {
-            this.totalPages = (int) Math.ceil((double) totalRecords / limit);
+            this.totalPages = (int) (((long) totalRecords + this.limit - 1) / this.limit);
         } else {
             this.totalPages = 0;
         }
 
-        this.offset = currentPage > 1 ? limit * (currentPage - 1) : 0;
+        this.offset = (long) this.limit * (currentPage - 1);
     }
 
     public int getCurrentPage() {
@@ -47,16 +47,28 @@ public class Pagination {
         return totalPages;
     }
 
-    public int getOffset() {
+    public long getOffset() {
         return offset;
     }
 
-    public String getPreviousPageURL (String basePath, Map<String, List<String>> queryParams) {
-        if (this.currentPage <= 1 || this.totalPages == 0) {
+    public String getPreviousPageURL(String basePath, Map<String, List<String>> queryParams) {
+        if (currentPage <= 1 || totalPages == 0) {
             return null;
         }
 
         int previousPage = currentPage > totalPages ? totalPages : currentPage - 1;
+        return buildPageURL(basePath, queryParams, previousPage);
+    }
+
+    public String getNextPageURL(String basePath, Map<String, List<String>> queryParams) {
+        if (currentPage >= totalPages) {
+            return null;
+        }
+
+        return buildPageURL(basePath, queryParams, currentPage + 1);
+    }
+
+    private String buildPageURL(String basePath, Map<String, List<String>> queryParams, int pageNumber) {
         List<String> querySearchArgs = new ArrayList<>();
         boolean pageParamAdded = false;
 
@@ -66,7 +78,7 @@ public class Pagination {
 
             if ("page".equals(key)) {
                 querySearchArgs.add("%s=%s".formatted(
-                        encodeQueryParam(key), previousPage));
+                        encodeQueryParam(key), pageNumber));
                 pageParamAdded = true;
             } else if (values != null) {
                 for (String value : values) {
@@ -77,7 +89,7 @@ public class Pagination {
         }
 
         if (!pageParamAdded) {
-            querySearchArgs.add("page=" + previousPage);
+            querySearchArgs.add("page=" + pageNumber);
         }
 
         return "%s?%s".formatted(basePath, String.join("&", querySearchArgs));

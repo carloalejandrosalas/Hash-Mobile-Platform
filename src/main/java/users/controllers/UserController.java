@@ -9,6 +9,7 @@ import common.validations.CommonValidations;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.InternalServerErrorResponse;
+import io.javalin.http.NotFoundResponse;
 import io.javalin.http.OkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ import users.validations.UserValidations;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -73,7 +73,8 @@ public class UserController implements CommonController {
         }
 
         var userId = userDao.createUser(userRequest);
-        var user = userDao.findById(userId).orElseThrow();
+        var user = userDao.findById(userId).orElseThrow(() ->
+                new InternalServerErrorResponse("The created user could not be retrieved"));
 
         ctx.status(201).json(toResponse(user));
 
@@ -90,20 +91,18 @@ public class UserController implements CommonController {
                         UserValidations.PROVIDED_ROLE_INVALID)
                 .get();
 
-        var user = userDao.findById(id).orElseThrow( () ->
-                new NoSuchElementException("User not found")
+        var user = userDao.findById(id).orElseThrow(() ->
+                new NotFoundResponse("User not found")
         );
 
-        if (!userDao.updateUser(user.id(), userRequest)) {
-           throw new InternalServerErrorResponse("Error during the user update");
-        }
+        userDao.updateUser(user.id(), userRequest);
 
         ctx.json(new OkResponse("record updated successfully"));
     }
 
     private void findUser(Context ctx) {
         var id = RequestParamsExtractor.getGivenId(ctx);
-        User user = userDao.findById(id).orElseThrow(() -> new NoSuchElementException("User not found"));
+        User user = userDao.findById(id).orElseThrow(() -> new NotFoundResponse("User not found"));
 
         ctx.json(toResponse(user));
     }
@@ -160,7 +159,8 @@ public class UserController implements CommonController {
 
 
             // Returns the response in JSON and pagination.
-            ctx.json(new GetUsersResponse(currentPage, totalRecords, pagination.getTotalPages(), "",
+            ctx.json(new GetUsersResponse(currentPage, totalRecords, pagination.getTotalPages(),
+                    pagination.getNextPageURL(basePath, queryParamsMap),
                     pagination.getPreviousPageURL(basePath, queryParamsMap), 200, users));
 
     }
@@ -168,7 +168,7 @@ public class UserController implements CommonController {
     private void deleteUser(Context ctx) {
             var id = RequestParamsExtractor.getGivenId(ctx);
 
-            var user = userDao.findById(id).orElseThrow(() -> new NoSuchElementException("User not found"));
+            var user = userDao.findById(id).orElseThrow(() -> new NotFoundResponse("User not found"));
 
             if (!user.isActive()) {
                 throw new BadRequestResponse(
@@ -188,7 +188,7 @@ public class UserController implements CommonController {
     private void restoreUser(Context ctx) {
             var id = RequestParamsExtractor.getGivenId(ctx);
 
-            var user = userDao.findById(id).orElseThrow(() -> new NoSuchElementException("User not found"));
+            var user = userDao.findById(id).orElseThrow(() -> new NotFoundResponse("User not found"));
 
             if (user.isActive()) {
                 throw new BadRequestResponse(

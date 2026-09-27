@@ -3,6 +3,7 @@
  */
 import auth.daos.PasswordRestoreTokenDao;
 import auth.services.AuthService;
+import auth.services.PasswordRestoreService;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -55,8 +56,10 @@ void main() {
     // 5. Initialize DAOs and Controllers
     UserDao userDao = new UserDao(jdbi);
     PasswordRestoreTokenDao passwordRestoreTokenDao = new PasswordRestoreTokenDao(jdbi);
+    PasswordRestoreService passwordRestoreService =
+            new PasswordRestoreService(passwordRestoreTokenDao, userDao);
 
-    AuthController authController = new AuthController(userDao, passwordRestoreTokenDao);
+    AuthController authController = new AuthController(userDao, passwordRestoreTokenDao, passwordRestoreService);
     UserController userController = new UserController(userDao);
 
 

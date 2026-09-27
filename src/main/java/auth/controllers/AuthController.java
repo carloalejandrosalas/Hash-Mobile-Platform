@@ -2,8 +2,10 @@ package auth.controllers;
 
 import auth.daos.PasswordRestoreTokenDao;
 import auth.dtos.*;
+import auth.exceptions.InvalidRestoreTokenException;
 import auth.models.PasswordRestoreToken;
 import auth.services.AuthService;
+import auth.services.PasswordRestoreService;
 import auth.validations.AuthValidations;
 import common.interfaces.CommonController;
 import common.utils.AuthUtils;
@@ -24,13 +26,16 @@ public class AuthController implements CommonController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final UserDao userDao;
     private final PasswordRestoreTokenDao passwordRestoreTokenDao;
+    private final PasswordRestoreService passwordRestoreService;
 
     @Override
     public String basePath() { return "/auth"; }
 
-    public AuthController(UserDao userDao, PasswordRestoreTokenDao passwordRestoreTokenDao) {
+    public AuthController(UserDao userDao, PasswordRestoreTokenDao passwordRestoreTokenDao,
+                          PasswordRestoreService passwordRestoreService) {
         this.userDao = userDao;
         this.passwordRestoreTokenDao = passwordRestoreTokenDao;
+        this.passwordRestoreService = passwordRestoreService;
     }
 
     @Override
@@ -134,31 +139,10 @@ public class AuthController implements CommonController {
                 .get();
 
 
-        var hashToken = KeyHasher.sha256(req.token());
-
-        var restorePasswordToken = passwordRestoreTokenDao.findByToken(hashToken).orElseThrow(() ->
-                new BadRequestResponse("The token is invalid"));
-
-        // If the token was already used, then return a 400 Bad request.
-        if (restorePasswordToken.isUsed()) {
-            var usedAt = restorePasswordToken.usedAt();
-
-            throw new BadRequestResponse("The token were used at: %s %S".formatted(usedAt.toLocalDate(),
-                    usedAt.toLocalTime()));
-        }
-
-        // If the token already expired, then return a 400 Bad request.
-        if (restorePasswordToken.expiresAt().isBefore(LocalDateTime.now())) {
-            throw new BadRequestResponse("The token already expired");
-        }
-
-        // If all good, then proceed with the password restoration.
-        var restorePassword = userDao.restorePassword(restorePasswordToken.userId(), req.newPassword(),
-                restorePasswordToken.id());
-
-        // If password restored failed, then return 500 Server error;
-        if (!restorePassword) {
-            throw new InternalServerErrorResponse("Restore password failed");
+        try {
+            passwordRestoreService.restorePassword(req.token(), req.newPassword());
+        } catch (InvalidRestoreTokenException e) {
+            throw new BadRequestResponse(e.getMessage());
         }
 
         // Return 200 OK, if all good.

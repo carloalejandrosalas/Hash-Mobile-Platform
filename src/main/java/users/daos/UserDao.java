@@ -70,7 +70,7 @@ public class UserDao extends CommonDao {
     }
 
     public List<User> searchUsers(String firstName, String lastName, String email, Boolean isActive,
-                                  List<String> roles, LocalDateTime createdAt, int offset, int limit) {
+                                  List<String> roles, LocalDateTime createdAt, long offset, int limit) {
         return jdbi.withHandle(handle -> {
             var sql = new StringBuilder("SELECT id, first_name, last_name, address, email, password_hash, role, " +
                     "is_active, created_at, updated_at, deleted_at FROM users WHERE 1=1 ");
@@ -124,10 +124,10 @@ public class UserDao extends CommonDao {
         );
     }
 
-    public boolean updateUser(long id, UpdateUserRequest userRequest) {
+    public void updateUser(long id, UpdateUserRequest userRequest) {
         var timestamp = LocalDateTime.now();
 
-        int rowsUpdated = jdbi.withHandle(handle ->
+        jdbi.useHandle(handle ->
                 handle.createUpdate("""
                                 UPDATE users
                                 SET first_name=:firstName, last_name=:lastName, address=:address,
@@ -142,8 +142,6 @@ public class UserDao extends CommonDao {
                         .bind("id", id)
                         .execute()
         );
-
-        return rowsUpdated > 0;
     }
 
     public boolean deleteUser(long id) {
