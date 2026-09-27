@@ -15,7 +15,7 @@ import org.jdbi.v3.core.Jdbi;
 import auth.controllers.AuthController;
 import auth.models.Role;
 import io.javalin.http.ForbiddenResponse;
-import common.dtos.ApiErrorResponse;
+import core.dtos.ApiErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import users.daos.UserDao;

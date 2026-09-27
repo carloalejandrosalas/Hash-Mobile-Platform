@@ -1,14 +1,9 @@
-package common.validations;
+package core.validations;
 
-import common.utils.EmailUtils;
-import io.javalin.validation.ValidationError;
-import io.javalin.validation.ValidationException;
+import core.utils.EmailUtils;
 
-import java.util.List;
-import java.util.Map;
-
-public class CommonValidations {
-    private CommonValidations() {
+public class CoreValidations {
+    private CoreValidations() {
     }
 
     public static String REQUIRED_FIELD_PREFIX = "Please provide the ";

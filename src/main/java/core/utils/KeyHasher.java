@@ -1,4 +1,4 @@
-package common.utils;
+package core.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

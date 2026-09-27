@@ -1,11 +1,11 @@
 package users.controllers;
 
 import auth.models.Role;
-import common.interfaces.CommonController;
-import common.utils.DateUtils;
-import common.utils.Pagination;
-import common.utils.RequestParamsExtractor;
-import common.validations.CommonValidations;
+import core.interfaces.CoreController;
+import core.utils.DateUtils;
+import core.utils.Pagination;
+import core.utils.RequestParamsExtractor;
+import core.validations.CoreValidations;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.InternalServerErrorResponse;
@@ -27,7 +27,7 @@ import java.util.List;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
-public class UserController implements CommonController {
+public class UserController implements CoreController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private static final List<String> availableRoles = Arrays.stream(Role.values()).map(Enum::name).toList();
     private final UserDao userDao;
@@ -56,14 +56,14 @@ public class UserController implements CommonController {
     }
     private void createUser(Context ctx) {
         CreateUserRequest userRequest = ctx.bodyValidator(CreateUserRequest.class)
-                .check(o -> CommonValidations.isNotEmpty(o.firstName()), UserValidations.FIRST_NAME)
-                .check(o -> CommonValidations.isNotEmpty(o.lastName()), UserValidations.LAST_NAME)
-                .check(o -> CommonValidations.isNotEmpty(o.address()), UserValidations.ADDRESS)
+                .check(o -> CoreValidations.isNotEmpty(o.firstName()), UserValidations.FIRST_NAME)
+                .check(o -> CoreValidations.isNotEmpty(o.lastName()), UserValidations.LAST_NAME)
+                .check(o -> CoreValidations.isNotEmpty(o.address()), UserValidations.ADDRESS)
                 .check(o -> UserValidations.isRoleValid(o.role()), UserValidations.PROVIDED_ROLE_INVALID)
-                .check(o -> CommonValidations.isNotEmpty(o.email()), UserValidations.EMAIL)
-                .check(o -> CommonValidations.isNotEmpty(o.password()), UserValidations.PASSWORD)
-                .check(o -> CommonValidations.isPasswordStrong(
-                        o.password()), CommonValidations.PASSWORD_STRONG_REQUIREMENT)
+                .check(o -> CoreValidations.isNotEmpty(o.email()), UserValidations.EMAIL)
+                .check(o -> CoreValidations.isNotEmpty(o.password()), UserValidations.PASSWORD)
+                .check(o -> CoreValidations.isPasswordStrong(
+                        o.password()), CoreValidations.PASSWORD_STRONG_REQUIREMENT)
                 .get();
 
         var isEmailAlreadyTaken = userDao.isEmailAlreadyTaken(userRequest.email(), null);
@@ -84,9 +84,9 @@ public class UserController implements CommonController {
         var id = RequestParamsExtractor.getGivenId(ctx);
 
         UpdateUserRequest userRequest = ctx.bodyValidator(UpdateUserRequest.class)
-                .check(o -> CommonValidations.isNotEmpty(o.firstName()), UserValidations.FIRST_NAME)
-                .check(o -> CommonValidations.isNotEmpty(o.lastName()), UserValidations.LAST_NAME)
-                .check(o -> CommonValidations.isNotEmpty(o.address()), UserValidations.ADDRESS)
+                .check(o -> CoreValidations.isNotEmpty(o.firstName()), UserValidations.FIRST_NAME)
+                .check(o -> CoreValidations.isNotEmpty(o.lastName()), UserValidations.LAST_NAME)
+                .check(o -> CoreValidations.isNotEmpty(o.address()), UserValidations.ADDRESS)
                 .check(o -> UserValidations.isRoleValid(o.role()),
                         UserValidations.PROVIDED_ROLE_INVALID)
                 .get();

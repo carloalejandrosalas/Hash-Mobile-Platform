@@ -1,4 +1,4 @@
-package common.utils;
+package core.utils;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

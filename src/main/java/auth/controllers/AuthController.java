@@ -7,10 +7,10 @@ import auth.models.PasswordRestoreToken;
 import auth.services.AuthService;
 import auth.services.PasswordRestoreService;
 import auth.validations.AuthValidations;
-import common.interfaces.CommonController;
-import common.utils.AuthUtils;
-import common.utils.KeyHasher;
-import common.validations.CommonValidations;
+import core.interfaces.CoreController;
+import core.utils.AuthUtils;
+import core.utils.KeyHasher;
+import core.validations.CoreValidations;
 import io.javalin.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
-public class AuthController implements CommonController {
+public class AuthController implements CoreController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final UserDao userDao;
     private final PasswordRestoreTokenDao passwordRestoreTokenDao;
@@ -55,8 +55,8 @@ public class AuthController implements CommonController {
      */
     public void login(Context ctx) {
         var req = ctx.bodyValidator(LoginRequest.class)
-                .check(o -> CommonValidations.isNotEmpty(o.email()), AuthValidations.EMAIL)
-                .check(o -> CommonValidations.isNotEmpty(o.password()), AuthValidations.PASSWORD)
+                .check(o -> CoreValidations.isNotEmpty(o.email()), AuthValidations.EMAIL)
+                .check(o -> CoreValidations.isNotEmpty(o.password()), AuthValidations.PASSWORD)
                 .get();
 
         User user = userDao.findByEmail(req.email())
@@ -81,7 +81,7 @@ public class AuthController implements CommonController {
      */
     public void resetPassword(Context ctx) throws NoSuchAlgorithmException {
         ResetPasswordRequest req = ctx.bodyValidator(ResetPasswordRequest.class)
-                .check(o -> CommonValidations.isNotEmpty(o.email()), AuthValidations.EMAIL)
+                .check(o -> CoreValidations.isNotEmpty(o.email()), AuthValidations.EMAIL)
                 .get();
 
         var user = userDao.findByEmail(req.email()).orElseThrow(() ->
@@ -130,11 +130,11 @@ public class AuthController implements CommonController {
         // Apply validations.
         var req = ctx.bodyValidator(RestorePasswordRequest.class)
                 .check(o -> AuthValidations.validateToken(o.token()), AuthValidations.TOKEN)
-                .check(o -> CommonValidations.isNotEmpty(o.newPassword()),
+                .check(o -> CoreValidations.isNotEmpty(o.newPassword()),
                         AuthValidations.PASSWORD)
-                .check(o -> CommonValidations.isPasswordStrong(o.confirmPassword()),
+                .check(o -> CoreValidations.isPasswordStrong(o.confirmPassword()),
                         AuthValidations.CONFIRM_PASSWORD)
-                .check(o -> CommonValidations.isExactEquals(o.newPassword(), o.confirmPassword()),
+                .check(o -> CoreValidations.isExactEquals(o.newPassword(), o.confirmPassword()),
                         AuthValidations.INVALID_CONFIRM_PASSWORD)
                 .get();
 
@@ -163,15 +163,15 @@ public class AuthController implements CommonController {
      */
     public void changePassword(Context ctx) {
         var req = ctx.bodyValidator(ChangePasswordRequest.class)
-                .check(o -> CommonValidations.isNotEmpty(o.currentPassword()),
+                .check(o -> CoreValidations.isNotEmpty(o.currentPassword()),
                         AuthValidations.CURRENT_PASSWORD)
-                .check(o -> CommonValidations.isNotEmpty(o.newPassword()),
+                .check(o -> CoreValidations.isNotEmpty(o.newPassword()),
                         AuthValidations.PASSWORD)
-                .check(o -> CommonValidations.isPasswordStrong(o.newPassword()),
-                        CommonValidations.PASSWORD_STRONG_REQUIREMENT)
-                .check(o -> CommonValidations.isNotEmpty(o.confirmPassword()),
+                .check(o -> CoreValidations.isPasswordStrong(o.newPassword()),
+                        CoreValidations.PASSWORD_STRONG_REQUIREMENT)
+                .check(o -> CoreValidations.isNotEmpty(o.confirmPassword()),
                         AuthValidations.CONFIRM_PASSWORD)
-                .check(o -> CommonValidations.isExactEquals(o.newPassword(),
+                .check(o -> CoreValidations.isExactEquals(o.newPassword(),
                                 o.confirmPassword()),
                         AuthValidations.INVALID_CONFIRM_PASSWORD)
                 .get();
@@ -203,10 +203,10 @@ public class AuthController implements CommonController {
      */
     public void changeEmail(Context ctx) {
         var req = ctx.bodyValidator(ChangeEmailRequest.class)
-                .check(o -> CommonValidations.isNotEmpty(o.currentPassword()),
+                .check(o -> CoreValidations.isNotEmpty(o.currentPassword()),
                         AuthValidations.CURRENT_PASSWORD)
-                .check(o -> CommonValidations.isEmailValid(o.newEmail()),
-                        CommonValidations.INVALID_EMAIL)
+                .check(o -> CoreValidations.isEmailValid(o.newEmail()),
+                        CoreValidations.INVALID_EMAIL)
                 .get();
 
         // Get the authenticated user's claims from the context.

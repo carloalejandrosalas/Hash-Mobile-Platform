@@ -1,9 +1,7 @@
-package common.utils;
+package core.utils;
 
-import common.exceptions.InvalidRequestParamException;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
-import users.exceptions.InvalidIdException;
 
 public class RequestParamsExtractor {
 

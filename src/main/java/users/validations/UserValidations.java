@@ -1,19 +1,19 @@
 package users.validations;
 
 import auth.models.Role;
-import common.validations.CommonValidations;
+import core.validations.CoreValidations;
 
 public final class UserValidations {
-    public static String FIRST_NAME = CommonValidations.getRequiredMessage("firstName");
-    public static String LAST_NAME = CommonValidations.getRequiredMessage("lastName");
-    public static String ADDRESS = CommonValidations.getRequiredMessage("address");
-    public static String EMAIL = CommonValidations.getRequiredMessage("email");
-    public static String PASSWORD = CommonValidations.getRequiredMessage("password");
+    public static String FIRST_NAME = CoreValidations.getRequiredMessage("firstName");
+    public static String LAST_NAME = CoreValidations.getRequiredMessage("lastName");
+    public static String ADDRESS = CoreValidations.getRequiredMessage("address");
+    public static String EMAIL = CoreValidations.getRequiredMessage("email");
+    public static String PASSWORD = CoreValidations.getRequiredMessage("password");
     public static String PROVIDED_ROLE_INVALID = "The provided role is invalid";
 
     public static boolean isRoleValid(String providedStringRole) {
         try {
-            var isNotEmpty = CommonValidations.isNotEmpty(providedStringRole);
+            var isNotEmpty = CoreValidations.isNotEmpty(providedStringRole);
 
             if (!isNotEmpty) {
                 return false;

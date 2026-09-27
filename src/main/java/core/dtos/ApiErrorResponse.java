@@ -1,4 +1,4 @@
-package common.dtos;
+package core.dtos;
 
 import java.util.Map;
 

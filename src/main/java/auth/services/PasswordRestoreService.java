@@ -3,7 +3,7 @@ package auth.services;
 import auth.daos.PasswordRestoreTokenDao;
 import auth.exceptions.InvalidRestoreTokenException;
 import auth.models.PasswordRestoreToken;
-import common.utils.KeyHasher;
+import core.utils.KeyHasher;
 import users.daos.UserDao;
 
 import java.security.NoSuchAlgorithmException;

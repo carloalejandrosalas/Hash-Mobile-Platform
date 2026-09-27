@@ -1,4 +1,4 @@
-package common.utils;
+package core.utils;
 import com.password4j.Password;
 
 public class AuthUtils {

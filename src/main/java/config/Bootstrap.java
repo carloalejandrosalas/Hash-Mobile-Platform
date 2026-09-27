@@ -1,8 +1,7 @@
 package config;
 
 import auth.models.Role;
-import com.auth0.jwt.JWT;
-import common.dtos.JdbcCreds;
+import core.dtos.JdbcCreds;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;

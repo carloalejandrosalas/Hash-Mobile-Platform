@@ -1,6 +1,5 @@
 package users.daos;
 
-import common.daos.CommonDao;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
@@ -9,15 +8,16 @@ import org.slf4j.LoggerFactory;
 import users.dtos.CreateUserRequest;
 import users.dtos.UpdateUserRequest;
 import users.models.User;
-import common.utils.AuthUtils;
-import common.utils.DateUtils;
+import core.utils.AuthUtils;
+import core.utils.DateUtils;
+import core.utils.QueryFilterUtils;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class UserDao extends CommonDao {
+public class UserDao {
     private final Jdbi jdbi;
     private static final Logger log = LoggerFactory.getLogger(UserDao.class);
 
@@ -270,12 +270,12 @@ public class UserDao extends CommonDao {
     private Query injectFiltersCommonSearch(StringBuilder sql, Handle handle, String firstName,
                                             String lastName, String email, Boolean isActive, List<String> roles,
                                             LocalDateTime createdAt, boolean doesRequiresPagination) {
-        var isFirstNameApplied = isStringApplied(firstName);
-        var isLastNameApplied = isStringApplied(lastName);
-        var isEmailApplied = isStringApplied(email);
-        var isActiveApplied = isBoolApplied(isActive);
-        var areRolesApplied = doesContainItems(roles);
-        var isCreatedAtApplied = isLocalDateTimeApplied(createdAt);
+        var isFirstNameApplied = QueryFilterUtils.isStringApplied(firstName);
+        var isLastNameApplied = QueryFilterUtils.isStringApplied(lastName);
+        var isEmailApplied = QueryFilterUtils.isStringApplied(email);
+        var isActiveApplied = QueryFilterUtils.isBooleanApplied(isActive);
+        var areRolesApplied = QueryFilterUtils.containsItems(roles);
+        var isCreatedAtApplied = QueryFilterUtils.isDateTimeApplied(createdAt);
 
         if (isFirstNameApplied) sql.append(" AND first_name LIKE :firstName");
         if (isLastNameApplied) sql.append(" AND last_name LIKE :lastName");

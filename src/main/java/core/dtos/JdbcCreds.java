@@ -1,4 +1,4 @@
-package common.dtos;
+package core.dtos;
 
 public record JdbcCreds (
         String username,
