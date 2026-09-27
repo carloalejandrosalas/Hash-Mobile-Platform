@@ -1,0 +1,35 @@
+info:
+  name: POST /change-email -  Change the current user's email
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{base_url}}/auth/change-email"
+  body:
+    type: json
+    data: |-
+      {
+        "newEmail": "random@localhost.com",
+        "currentPassword": "Admin123!"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        // Parse the response body
+        let data = res.getBody();
+
+        if (data.token) {
+          // Set the jwt token into the environment variable
+          bru.setEnvVar("jwt_token", data.token) 
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

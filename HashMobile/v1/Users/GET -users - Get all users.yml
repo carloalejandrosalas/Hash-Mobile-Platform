@@ -1,0 +1,49 @@
+info:
+  name: GET /users - Get all users
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{base_url}}/users?page=1"
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: isActive
+      value: "false"
+      type: query
+      disabled: true
+    - name: getAll
+      value: "true"
+      type: query
+      description: Get all active and inactive users.
+      disabled: true
+    - name: firstName
+      value: Carlo
+      type: query
+      description: The user's first name.
+      disabled: true
+    - name: lastName
+      value: Salas
+      type: query
+      description: "The user's last name. "
+      disabled: true
+    - name: role
+      value: ADMIN, MANAGER
+      type: query
+      description: The user's assigned role.
+      disabled: true
+    - name: email
+      value: carlosalas
+      type: query
+      description: The user's email address.
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

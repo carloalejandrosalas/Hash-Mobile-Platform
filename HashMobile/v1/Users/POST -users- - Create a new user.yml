@@ -1,0 +1,27 @@
+info:
+  name: POST /users/ - Create a new user
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{base_url}}/users"
+  body:
+    type: json
+    data: |-
+      {
+        "firstName": "Mark",
+        "lastName": "Hames",
+        "address": "S JEFFERSON 24",
+        "email": "f@localhost.com",
+        "password": "Pass123!",
+        "role": "OPERATOR"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

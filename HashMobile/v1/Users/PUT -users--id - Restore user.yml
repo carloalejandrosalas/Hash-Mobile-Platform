@@ -1,0 +1,20 @@
+info:
+  name: PUT /users/:id - Restore user
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{base_url}}/users/:id/restore"
+  params:
+    - name: id
+      value: "1"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

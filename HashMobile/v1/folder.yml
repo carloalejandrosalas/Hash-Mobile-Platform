@@ -1,0 +1,14 @@
+info:
+  name: v1
+  type: folder
+  seq: 1
+
+request:
+  auth:
+    type: bearer
+    token: "{{jwt_token}}"
+  variables:
+    - name: base_url
+      value: http://localhost:7070/api/v1
+    - name: jwt_token
+      value: ""

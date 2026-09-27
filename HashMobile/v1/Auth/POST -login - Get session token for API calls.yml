@@ -1,0 +1,34 @@
+info:
+  name: POST /login - Get session token for API calls
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{base_url}}/auth/login"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "admin@localhost.com",
+        "password": "Admin123!"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        // Parse the response body
+        let data = res.getBody();
+
+        if (data.token) {
+          // Set the jwt token into the environment variable
+          bru.setEnvVar("jwt_token", data.token) 
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

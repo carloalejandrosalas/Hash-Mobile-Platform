@@ -3,6 +3,7 @@ build/
 dist/
 out/
 nbproject/private/
+target/
 
 # Compiled Java classes
 *.class

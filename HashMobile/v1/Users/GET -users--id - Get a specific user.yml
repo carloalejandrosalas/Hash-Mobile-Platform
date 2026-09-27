@@ -1,0 +1,21 @@
+info:
+  name: GET /users/:id - Get a specific user
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{base_url}}/users/:id"
+  params:
+    - name: id
+      value: "1"
+      type: path
+      description: User's ID
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -1,0 +1,26 @@
+opencollection: 1.0.0
+
+info:
+  name: hash-restful-api
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  variables:
+    - name: jwt_token
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMCIsImVtYWlsIjoiYWRtaW5AbG9jYWxob3N0LmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc5MDQ4MDU1NSwiZXhwIjoxNzkwNTY2OTU1fQ.Jn4kkCpK7GUNAIwdkIJONigPh1Ga_nNSGie_tBMVOgQ
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
