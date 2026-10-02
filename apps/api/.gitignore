@@ -1,0 +1,25 @@
+# NetBeans / Java build output
+build/
+dist/
+out/
+nbproject/private/
+target/
+
+# Compiled Java classes
+*.class
+
+# Logs and temporary files
+*.log
+*.tmp
+*~
+
+# IDE files
+/.idea/
+/.vscode/
+.env
+.env.*
+!.env.example
+
+# macOS / Windows system files
+.DS_Store
+Thumbs.db

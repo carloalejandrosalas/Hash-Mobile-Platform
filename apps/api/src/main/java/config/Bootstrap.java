@@ -11,9 +11,30 @@ import org.slf4j.LoggerFactory;
 import users.daos.UserDao;
 import users.dtos.CreateUserRequest;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Bootstrap {
-    private static final Dotenv dotenv = Dotenv.load();
+    private static final Dotenv dotenv = loadDotenv();
     private static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
+
+    private static Dotenv loadDotenv() {
+        Path workingDirectory = Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
+
+        for (Path directory = workingDirectory; directory != null; directory = directory.getParent()) {
+            Path monorepoEnv = directory.resolve("apps/api/.env");
+            if (Files.isRegularFile(monorepoEnv)) {
+                return Dotenv.configure().directory(monorepoEnv.getParent().toString()).load();
+            }
+
+            Path moduleEnv = directory.resolve(".env");
+            if (Files.isRegularFile(moduleEnv)) {
+                return Dotenv.configure().directory(directory.toString()).load();
+            }
+        }
+
+        return Dotenv.configure().directory(workingDirectory.toString()).ignoreIfMissing().load();
+    }
 
     public static void loadAdminUser (Jdbi jdbi) {
         var adminEmail = dotenv.get("ADMIN_EMAIL");
@@ -82,13 +103,6 @@ public class Bootstrap {
         var PASSWORD = dotenv.get("SMTP_PASSWORD");
         var PORT = dotenv.get("SMTP_PORT");
         var IS_SECURE = dotenv.get("SMTP_SECURE");
-
-        IO.println("SMTP_HOST: " + HOST);
-        IO.println("SMTP_FROM: " + FROM);
-        IO.println("SMTP_USERNAME: " + USERNAME);
-        IO.println("SMTP_PASSWORD: " + PASSWORD);
-        IO.println("SMTP_PORT: " + PORT);
-        IO.println("SMTP_SECURE: " + IS_SECURE);
 
         if (HOST == null || HOST.isBlank()
                 || FROM == null || FROM.isBlank()
