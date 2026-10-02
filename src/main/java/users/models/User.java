@@ -15,5 +15,9 @@ public record User(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime deletedAt
-) {}
+) {
+    public String getFullName () {
+        return "%s %s".formatted(firstName, lastName);
+    }
+}
 

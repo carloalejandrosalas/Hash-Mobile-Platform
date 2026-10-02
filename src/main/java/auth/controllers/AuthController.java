@@ -75,11 +75,10 @@ public class AuthController implements CoreController {
     /**
      * Handles the password reset request by generating a password restore token for the user.
      * @param ctx The Javalin context containing the request and response objects.
-     * @throws NoSuchAlgorithmException If the hashing algorithm is not available.
      * @throws BadRequestResponse If the email is not registered or if a valid token already exists for the user.
      * @throws InternalServerErrorResponse If an unexpected error occurs during the token creation process.
      */
-    public void resetPassword(Context ctx) throws NoSuchAlgorithmException {
+    public void resetPassword(Context ctx) {
         ResetPasswordRequest req = ctx.bodyValidator(ResetPasswordRequest.class)
                 .check(o -> CoreValidations.isNotEmpty(o.email()), AuthValidations.EMAIL)
                 .get();
@@ -97,16 +96,19 @@ public class AuthController implements CoreController {
             }
         }
 
-        String userActivationKey = AuthService.generatePasswordResetToken(15);
+        String passwordRestoreToken = AuthService.generatePasswordRestoreToken(15);
 
         // Generate hash for the user activation key.
-        String hashUserActivationKey = KeyHasher.sha256(userActivationKey);
+        String hashPasswordToken = KeyHasher.sha256(passwordRestoreToken);
 
         // TODO removed once we implemented the email service to send the user activation key to the user.
-        // log.info("Generated user activation key for user {}: {}", user.email(), userActivationKey);
+        // log.info("Generated user activation key for user {}: {}", user.email(), passwordRestoreToken);
+        AuthService.sendResetPasswordConfirmationEmail(user.getFullName(), user.email(), passwordRestoreToken);
 
-        boolean createRestoreToken = passwordRestoreTokenDao.createPasswordRestoreToken(user.id(),
-                hashUserActivationKey);
+        boolean createRestoreToken = passwordRestoreTokenDao.createPasswordRestoreToken(
+                user.id(),
+                hashPasswordToken
+        );
 
         if (!createRestoreToken) {
             throw new InternalServerErrorResponse("The token creation failed");

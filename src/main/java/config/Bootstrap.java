@@ -2,6 +2,8 @@ package config;
 
 import auth.models.Role;
 import core.dtos.JdbcCreds;
+import core.dtos.SmtpCredentials;
+import core.validations.CoreValidations;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
@@ -11,7 +13,6 @@ import users.dtos.CreateUserRequest;
 
 public class Bootstrap {
     private static final Dotenv dotenv = Dotenv.load();
-
     private static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
     public static void loadAdminUser (Jdbi jdbi) {
@@ -72,5 +73,54 @@ public class Bootstrap {
         }
 
         return JWT_SECRET;
+    }
+
+    public static SmtpCredentials getSmtpCreds () {
+        var HOST = dotenv.get("SMTP_HOST");
+        var FROM = dotenv.get("SMTP_FROM");
+        var USERNAME = dotenv.get("SMTP_USERNAME");
+        var PASSWORD = dotenv.get("SMTP_PASSWORD");
+        var PORT = dotenv.get("SMTP_PORT");
+        var IS_SECURE = dotenv.get("SMTP_SECURE");
+
+        IO.println("SMTP_HOST: " + HOST);
+        IO.println("SMTP_FROM: " + FROM);
+        IO.println("SMTP_USERNAME: " + USERNAME);
+        IO.println("SMTP_PASSWORD: " + PASSWORD);
+        IO.println("SMTP_PORT: " + PORT);
+        IO.println("SMTP_SECURE: " + IS_SECURE);
+
+        if (HOST == null || HOST.isBlank()
+                || FROM == null || FROM.isBlank()
+                || USERNAME == null || USERNAME.isBlank()
+                || PASSWORD == null || PASSWORD.isBlank()
+                || !CoreValidations.isInteger(PORT)
+                || IS_SECURE == null || !CoreValidations.isBoolean(IS_SECURE)) {
+            throw new IllegalStateException("Missing or invalid SMTP configuration");
+        }
+
+        return new SmtpCredentials(
+                HOST,
+                USERNAME,
+                PASSWORD,
+                Integer.parseInt(PORT),
+                FROM,
+                IS_SECURE.equalsIgnoreCase("true")
+        );
+    }
+
+    public static String getBaseWebAppUrl() {
+        return dotenv.get("BASE_WEB_APP_URL");
+    }
+
+    /**
+     * Method to verify that all required environment variables are set and valid.
+     */
+    public static void verifyEnvironmentVariables() {
+
+            getJdbcCreds();
+            getJwtSecret();
+            getSmtpCreds();
+            getBaseWebAppUrl();
     }
 }

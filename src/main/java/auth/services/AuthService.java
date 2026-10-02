@@ -5,8 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import config.Bootstrap;
+import core.services.EmailService;
 import io.javalin.http.Context;
+import io.javalin.http.InternalServerErrorResponse;
+import io.javalin.http.NotImplementedResponse;
 import io.javalin.http.UnauthorizedResponse;
+import org.jetbrains.annotations.NotNull;
 import users.models.User;
 
 import java.security.SecureRandom;
@@ -77,7 +81,7 @@ public class AuthService {
 
     public record UserClaims(long userId, String email, String role) {}
 
-    public static String generatePasswordResetToken(int length) throws IllegalArgumentException {
+    public static String generatePasswordRestoreToken(int length) throws IllegalArgumentException {
         if (length <= 0) {
             throw new IllegalArgumentException("Length must be positive");
         }
@@ -90,5 +94,41 @@ public class AuthService {
         }
 
         return key.toString();
+    }
+
+    public static void sendResetPasswordConfirmationEmail(String fullName, String email, String token) {
+        try {
+            String baseWebUrl = Bootstrap.getBaseWebAppUrl();
+            String subject = "Reset your account password";
+            String body = getBody(fullName, token, baseWebUrl);
+
+            EmailService.sendEmail(email, subject, body);
+        } catch (NotImplementedResponse e) {
+            throw new NotImplementedResponse("Email sending is not implemented on this platform.");
+        } catch (Exception e) {
+            throw new InternalServerErrorResponse("Failed to send reset password confirmation email: " +
+                    e.getMessage());
+        }
+    }
+
+    private static @NotNull String getBody(String fullName, String token, String baseWebUrl) {
+        String link = "%s/auth/restore-password?token=%s".formatted(baseWebUrl, token);
+
+        return """
+            <html>
+                <h3>Hash Mobile<h3>
+                <h6>Hello, %s</h6>
+                <p>
+                    Here is the link to reset your password: <a href="%s">Click here</a>
+                </p>
+                <p>
+                <p>
+                    <small>
+                        If you did not request the reset password link. Please ignore this email message or contact
+                        technical support for further clarifications.
+                    </small>
+                </p>
+            </html>
+            """.formatted(fullName, link);
     }
 }

@@ -20,6 +20,33 @@ public class CoreValidations {
         return value != null && !value.trim().isEmpty();
     }
 
+    public static boolean isInteger (String value) {
+        try {
+            Integer.parseInt(value);
+
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isLong (String value) {
+        try {
+            Long.parseLong(value);
+
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isBoolean (String value) {
+        return switch (value.toLowerCase()) {
+            case "true", "false" -> true;
+            default -> false;
+        };
+    }
+
     public static boolean isExactEquals(String value, String compareValue) {
         return value.equals(compareValue);
     }
