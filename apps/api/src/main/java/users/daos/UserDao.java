@@ -16,6 +16,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class UserDao {
     private final Jdbi jdbi;
@@ -28,8 +29,11 @@ public class UserDao {
 
     public Optional<User> findByEmail(String email) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("SELECT id, first_name, last_name, address, email, password_hash, role, " +
-                                "is_active, created_at, updated_at, deleted_at FROM users WHERE email = :email")
+                handle.createQuery("SELECT id, role_id, first_name, last_name, address, email, " +
+                                "password_hash, " +
+                                "status, created_at, updated_at, deleted_at FROM customers " +
+                                "WHERE email" +
+                                " = :email")
                         .bind("email", email)
                         .map((resultSet, _) -> mapUser(resultSet))
                         .findFirst()
@@ -37,7 +41,7 @@ public class UserDao {
     }
 
 
-    public boolean isEmailAlreadyTaken(String email, Long excludeUserId) {
+    public boolean isEmailAlreadyTaken(String email, UUID excludeUserId) {
         var result = jdbi.withHandle(handle -> {
             var sql = new StringBuilder("SELECT COUNT(*) FROM users WHERE email=:email ");
 
@@ -61,8 +65,10 @@ public class UserDao {
 
     public Optional<User> findById(Long id) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("SELECT id, first_name, last_name, address, email, password_hash, role, " +
-                                "is_active, created_at, updated_at, deleted_at FROM users WHERE id = :id")
+                handle.createQuery("SELECT id, role_id, first_name, last_name, address, email, " +
+                                "password_hash, " +
+                                "status, created_at, updated_at, deleted_at FROM customers " +
+                                "WHERE id = :id")
                         .bind("id", id)
                         .map((resultSet, _) -> mapUser(resultSet))
                         .findFirst()
@@ -106,7 +112,8 @@ public class UserDao {
         String passwordHash = AuthUtils.hashPassword(user.password());
 
         return jdbi.withHandle(handle ->
-                handle.createUpdate("INSERT INTO users (first_name, last_name, address, email, password_hash, role, " +
+                handle.createUpdate("INSERT INTO customers (first_name, last_name, address, " +
+                                "email, password_hash, role, " +
                                 "is_active, created_at) VALUES (:firstName, :lastName, :address, :email, :passwordHash," +
                                 " :role, :isActive, :createdAt)")
                         .bind("firstName", user.firstName())

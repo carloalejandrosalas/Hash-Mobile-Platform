@@ -7,7 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Sistema Guapo copy" />
+        <module name="hashmobile" />
       </profile>
     </annotationProcessing>
+  </component>
+  <component name="TypeScriptCompiler">
+    <option name="memoryAutoIncrease" value="true" />
   </component>
 </project>

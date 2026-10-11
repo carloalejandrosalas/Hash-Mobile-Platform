@@ -17,7 +17,7 @@ import users.daos.UserDao;
 import users.dtos.CreateUserRequest;
 import users.dtos.GetUsersResponse;
 import users.dtos.UpdateUserRequest;
-import users.dtos.UserResponse;
+import users.dtos.CustomerResponse;
 import users.models.User;
 import users.validations.UserValidations;
 
@@ -205,8 +205,8 @@ public class UserController implements CoreController {
             ctx.status(200).json(new OkResponse("User restored successfully"));
     }
 
-    private UserResponse toResponse(User user) {
-        return new UserResponse(user.id(),
+    private CustomerResponse toResponse(User user) {
+        return new CustomerResponse(user.id(),
                 user.firstName(),
                 user.lastName(),
                 user.address(),

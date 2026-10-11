@@ -8,5 +8,5 @@ public record GetUsersResponse(
         String nextPage,
         String previousPage,
         Integer status,
-        List<UserResponse> results
+        List<CustomerResponse> results
 ) {}

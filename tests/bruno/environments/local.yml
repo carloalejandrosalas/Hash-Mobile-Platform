@@ -1,4 +1,0 @@
-name: local
-variables:
-  - secret: true
-    name: jwt_token

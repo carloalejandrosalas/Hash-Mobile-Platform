@@ -7,6 +7,7 @@ import core.utils.KeyHasher;
 import users.daos.UserDao;
 
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 public class PasswordRestoreService {
@@ -27,7 +28,7 @@ public class PasswordRestoreService {
             throw new InvalidRestoreTokenException("The token has already been used");
         }
 
-        if (!token.expiresAt().isAfter(LocalDateTime.now())) {
+        if (!token.expiresAt().isAfter(Instant.now())) {
             throw new InvalidRestoreTokenException("The token has expired");
         }
 

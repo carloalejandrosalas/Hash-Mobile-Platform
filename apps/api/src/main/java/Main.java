@@ -68,6 +68,14 @@ void main() {
 
   Javalin.create(
           config -> {
+            config.bundledPlugins.enableCors(
+                cors -> {
+                  cors.addRule(
+                      it -> {
+                        it.anyHost();
+                      });
+                });
+
             // Custom validators
             config.validation.register(LocalDateTime.class, LocalDateTime::parse);
 

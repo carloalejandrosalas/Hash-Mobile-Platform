@@ -11,7 +11,13 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
-
+      - sistemaguapocopy_mysql_data:/var/lib/mysql
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    container_name: swagger-editor
+    restart: unless-stopped
+    ports:
+      - "8080:80"
 volumes:
-  mysql_data:
+  sistemaguapocopy_mysql_data:
+    external: true
